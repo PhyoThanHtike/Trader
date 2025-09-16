@@ -14,51 +14,95 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  records   AttendanceRecord[]
-  
+  id             String   @id @default(cuid())
+  email          String   @unique
+  password       String
+  name           String
+  role           Role      @default(USER)
+  googleId       String?   @unique
+  profilePicture String   @default("https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541")
+  createdAt      DateTime @default(now())
+  orders         Order[]
+  tradesAsBuyer  Trade[]  @relation("BuyerTrades")
+  tradesAsSeller Trade[]  @relation("SellerTrades")
+
   @@map("users")
 }
 
-model AttendanceRecord {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        RecordType
-  timestamp   DateTime @default(now())
-  latitude    Float
-  longitude   Float
-  locationVerified Boolean @default(false)
-  faceVerified Boolean?
-  createdAt   DateTime @default(now())
-  
-  @@map("attendance_records")
+model Product {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  image     String   @default("https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541")
+  createdAt DateTime @default(now())
+  avgPrice Float
+  orders    Order[]
+  trades    Trade[]
+  analytics DailyAnalytics[]
+
+  @@map("products")
 }
 
-model AllowedLocation {
-  id        String   @id @default(cuid())
-  latitude  Float
-  longitude Float
-  radius    Int      @default(200)
-  name      String
+model Order {
+  id        String      @id @default(cuid())
+  type      OrderType
+  price     Float
+  volume    Int
+  filled    Int         @default(0) // how much has been matched
+  status    OrderStatus @default(PENDING)
+  createdAt DateTime    @default(now())
+  userId    String
+  productId String
+  user      User        @relation(fields: [userId], references: [id])
+  product   Product     @relation(fields: [productId], references: [id])
+
+  @@map("orders")
+}
+
+model Trade {
+  id        Int      @id @default(autoincrement())
+  price     Float
+  volume    Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   
-  @@map("allowed_locations")
+  buyerId   String
+  sellerId  String
+  productId String
+
+  buyer     User     @relation("BuyerTrades", fields: [buyerId], references: [id])
+  seller    User     @relation("SellerTrades", fields: [sellerId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("trades")
+}
+
+model DailyAnalytics {
+  id        String   @id @default(cuid())
+  date      DateTime
+  avgPrice  Float
+  totalVolume Int
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("daily_analytics")
+}
+
+enum OrderType {
+  BUY
+  SELL
+
+  @@map("order_type")
+}
+
+enum OrderStatus {
+  PENDING
+  PARTIALLY_FILLED
+  FILLED
+  CANCELLED
+
+  @@map("order_status")
 }
 
 enum Role {
-  ADMIN
   USER
-}
-
-enum RecordType {
-  IN
-  OUT
+  ADMIN
 }
