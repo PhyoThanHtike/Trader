@@ -3,18 +3,18 @@ import prisma from "../utils/database.js";
 export const addProduct = async (req, res) => {
   try {
     const { name, avgPrice } = req.body;
-    const userId = req.user.id;
-    const user = await prisma.user.findUnique({ userId });
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found!" });
-    }
-    if (user.role != "ADMIN") {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not allowed!" });
-    }
+    // const userId = req.user.id;
+    // const user = await prisma.user.findUnique({ userId });
+    // if (!user) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "User not found!" });
+    // }
+    // if (user.role != "ADMIN") {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "User not allowed!" });
+    // }
     const product = await prisma.product.create({
       data: {
         name,
