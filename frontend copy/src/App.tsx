@@ -7,6 +7,10 @@ import HomeLayout from "./AppComponents/Sidebar/HomeLayout";
 import { Suspense } from "react";
 import Auth from "./Auth/Auth";
 import About from "./Pages/About";
+import Products from "./Pages/Products";
+import Order from "./Pages/Order";
+import History from "./Pages/History";
+import Profile from "./Pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +24,10 @@ const router = createBrowserRouter([
         ),
         children: [
           { index: true, element: <Dashboard/> },
+          { path: "products", element: <Products/> },
+          { path: "order", element: <Order/> },
+          { path: "history", element: <History/> },
+          { path: "profile", element: <Profile/> },
         ],
       },
       {

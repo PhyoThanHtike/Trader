@@ -33,10 +33,13 @@ export const signUp = async (req, res) => {
       generateToken(user.id, res);
       res.status(201).json({
         success: true,
-        userId: user.id,
-        userName: user.name,
-        email: user.email,
-        role: user.role,
+        user: {
+          userId: user.id,
+          email: user.email,
+          userName: user.name,
+          role: user.role,
+          profilePicture: user.profilePicture,
+        },
         message: "User creatd successfully",
       });
     } else {
@@ -44,7 +47,7 @@ export const signUp = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in signup controller", error.message);
-    res.status(500).json({ success:false, message: "Internal Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
@@ -53,13 +56,17 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return res.status(400).json({ success:false, message: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(400).json({ success:false, message: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
     }
 
     generateToken(user.id, res);
@@ -72,6 +79,7 @@ export const login = async (req, res) => {
         email: user.email,
         userName: user.name,
         role: user.role,
+        profilePicture: user.profilePicture,
       },
     });
   } catch (error) {
@@ -95,18 +103,20 @@ export const logOut = (req, res) => {
 export const checkUser = async (req, res) => {
   try {
     const userId = req.user.id;
-    const user = await prisma.user.findUnique({userId});
-    if(!user){
-        return res.status(404).json({success: false, message:"User not found!"});
+    const user = await prisma.user.findUnique({ userId });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found!" });
     }
     res.status(200).json({
-        userId: user.id,
-        userName: user.name,
-        email: user.email,
-        role: user.role
+      userId: user.id,
+      userName: user.name,
+      email: user.email,
+      role: user.role,
     });
   } catch (error) {
-        console.log("User checking error", error.message);
+    console.log("User checking error", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };

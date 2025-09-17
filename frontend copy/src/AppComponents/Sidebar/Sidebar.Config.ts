@@ -14,8 +14,7 @@ import {
 export const mainNav = [
   { title: "Dashboard", href: "/", icon: Home },
   { title: "Profile", href: "/profile", icon: User },
-  { title: "Buy", href: "/buy", icon: ShoppingBasket },
-  { title: "Sell ", href: "/sell", icon: HandCoins },
+  { title: "Buy / Sell ", href: "/order", icon: HandCoins },
   { title: "Products", href: "/products", icon: LayoutTemplate },
   { title: "History", href: "/history", icon: ClipboardClock },
 ]

@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { mainNav, bottomNav } from "./Sidebar.Config";
 import { LogOut, Signature } from "lucide-react";
 // import { logout } from "@/apiEndpoints/Auth";
+import { SignOut } from "@/apiEndpoints/Auth";
 // import { useSelector } from "react-redux";
 import { ThemeToggle } from "@/context/ThemeToggle";
 
@@ -125,7 +126,7 @@ export function HomeLayout() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <SidebarMenuButton
-                          // onClick={() => logout()}
+                          onClick={() => SignOut()}
                           className="text-destructive cursor-pointer"
                         >
                           <LogOut className="h-5 w-5" />
