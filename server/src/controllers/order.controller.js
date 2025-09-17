@@ -2,6 +2,77 @@ import prisma from "../utils/database.js";
 import { matchingEngine } from "../utils/matchingEngine.js";
 import { sendEmailNotification } from "../utils/emailService.js";
 
+// export const placeOrder = async (req, res) => {
+//   try {
+//     const { type, price, volume, productId } = req.body;
+//     const userId = req.user.id;
+
+//     // Validate input
+//     if (!type || !price || !volume || !productId) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "Missing required fields" 
+//       });
+//     }
+
+//     if (price <= 0 || volume <= 0) {
+//       return res.status(400).json({ 
+//         success: false, 
+//         message: "Price and volume must be positive" 
+//       });
+//     }
+
+//     // Check if product exists
+//     const product = await prisma.product.findUnique({
+//       where: { id: productId }
+//     });
+
+//     if (!product) {
+//       return res.status(404).json({ 
+//         success: false, 
+//         message: "Product not found" 
+//       });
+//     }
+
+//     // Create order
+//     const order = await prisma.order.create({
+//       data: {
+//         type,
+//         price,
+//         volume,
+//         userId,
+//         productId,
+//         status: 'PENDING'
+//       },
+//       include: {
+//         user: true,
+//         product: true
+//       }
+//     });
+
+//     // Run matching engine
+//     const matches = await matchingEngine(order);
+
+//     res.json({
+//       success: true,
+//       message: "Order placed successfully",
+//       order: {
+//         id: order.id,
+//         type: order.type,
+//         price: order.price,
+//         volume: order.volume,
+//         status: order.status,
+//         product: order.product.name
+//       },
+//       matches: matches
+//     });
+
+//   } catch (error) {
+//     console.log("Error in order controller", error.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
 export const placeOrder = async (req, res) => {
   try {
     const { type, price, volume, productId } = req.body;
@@ -34,6 +105,18 @@ export const placeOrder = async (req, res) => {
       });
     }
 
+    // For future payment integration:
+    // const totalAmount = price * volume;
+    // let paymentIntentId = null;
+    // if (type === 'BUY') {
+    //   const paymentIntent = await createPaymentIntent({
+    //     amount: Math.round(totalAmount * 100),
+    //     currency: 'usd',
+    //     metadata: { userId, productId, orderType: 'BUY' }
+    //   });
+    //   paymentIntentId = paymentIntent.id;
+    // }
+
     // Create order
     const order = await prisma.order.create({
       data: {
@@ -42,6 +125,8 @@ export const placeOrder = async (req, res) => {
         volume,
         userId,
         productId,
+        // totalAmount, // For future payment
+        // paymentIntentId, // For future payment
         status: 'PENDING'
       },
       include: {
@@ -50,8 +135,8 @@ export const placeOrder = async (req, res) => {
       }
     });
 
-    // Run matching engine
-    const matches = await matchingEngine(order);
+    // Run automatic matching engine
+    const tradeResults = await matchingEngine(order);
 
     res.json({
       success: true,
@@ -62,9 +147,11 @@ export const placeOrder = async (req, res) => {
         price: order.price,
         volume: order.volume,
         status: order.status,
+        filled: order.filled,
         product: order.product.name
       },
-      matches: matches
+      trades: tradeResults.trades,
+      message: tradeResults.message
     });
 
   } catch (error) {
