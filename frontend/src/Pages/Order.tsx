@@ -86,14 +86,20 @@ const Order = () => {
       </motion.h1>
 
       {/* Short guide */}
+      {/* Short guide */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, delay: 0.2 }}
-        className="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-xl p-6 shadow-md mb-8"
+        className="
+    rounded-xl p-6 shadow-md mb-8 
+    bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 
+    dark:from-slate-800 dark:via-slate-900 dark:to-slate-800
+  "
       >
         <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-          <ShoppingCart className="w-5 h-5 text-primary" /> How to place an order
+          <ShoppingCart className="w-5 h-5 text-primary" /> How to place an
+          order
         </h2>
         <ul className="space-y-2 text-muted-foreground">
           <li className="flex items-start gap-2">
@@ -158,17 +164,17 @@ const Order = () => {
                     transition={{ delay: index * 0.2, duration: 0.6 }}
                     className="text-sm text-muted-foreground font-medium"
                   >
-                    Avg Price: ${product.avgPrice}
-                  </motion.span>
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.25, duration: 0.6 }}
-                    className="text-xs text-primary font-semibold"
-                  >
-                    Click to trade →
+                    Market Value: ${product.avgPrice} / kg
                   </motion.span>
                 </div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.25, duration: 0.6 }}
+                  className="text-xs text-primary font-semibold pt-4"
+                >
+                  Click to trade →
+                </motion.p>
               </CardContent>
             </Card>
           </motion.div>

@@ -13,6 +13,7 @@ import History from "./Pages/History";
 import Profile from "./Pages/Profile";
 import ProtectRoute from "./Layout/ProtectRoute";
 import ProductDetail from "./Pages/ProductDetail";
+import OrderForm from "./Pages/OrderForm";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
             element: <ProductDetail />,
           },
           { path: "order", element: <Order/> },
+          {
+            path: "order/form/:id",
+            element: <OrderForm />,
+          },
           { path: "history", element: <History/> },
           { path: "profile", element: <Profile/> },
         ],
