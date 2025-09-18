@@ -11,6 +11,8 @@ import Products from "./Pages/Products";
 import Order from "./Pages/Order";
 import History from "./Pages/History";
 import Profile from "./Pages/Profile";
+import ProtectRoute from "./Layout/ProtectRoute";
+import ProductDetail from "./Pages/ProductDetail";
 
 const router = createBrowserRouter([
   {
@@ -19,12 +21,17 @@ const router = createBrowserRouter([
     children: [
       {
         element: (
-            <HomeLayout />
-
+            <ProtectRoute>
+              <HomeLayout />
+            </ProtectRoute>
         ),
         children: [
           { index: true, element: <Dashboard/> },
           { path: "products", element: <Products/> },
+          {
+            path: "products/:id",
+            element: <ProductDetail />,
+          },
           { path: "order", element: <Order/> },
           { path: "history", element: <History/> },
           { path: "profile", element: <Profile/> },

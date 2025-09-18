@@ -26,7 +26,7 @@ import { mainNav, bottomNav } from "./Sidebar.Config";
 import { LogOut, Signature } from "lucide-react";
 // import { logout } from "@/apiEndpoints/Auth";
 import { SignOut } from "@/apiEndpoints/Auth";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ThemeToggle } from "@/context/ThemeToggle";
 
 // Custom header component that responds to sidebar state
@@ -56,7 +56,7 @@ function CollapsibleHeader() {
 
 export function HomeLayout() {
   const location = useLocation();
-  // const user = useSelector((state: any) => state.user);
+  const user = useSelector((state: any) => state.user);
   console.log("hello");
   return (
     <SidebarProvider>

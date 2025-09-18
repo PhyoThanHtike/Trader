@@ -2,8 +2,8 @@ import { Login, SignUp } from "@/apiEndpoints/Auth";
 import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { useDispatch } from "react-redux";
-// import { setUser } from "@/store/slices/UserSlice";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/slices/UserSlice";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
@@ -22,7 +22,7 @@ interface SignupFormData extends LoginFormData {
 }
 
 const Auth = () => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [mode, setMode] = useState<authMode>("login");
   const [loginData, setLoginData] = useState<LoginFormData>({
     email: "",
@@ -61,24 +61,23 @@ const Auth = () => {
       if (mode === "login") {
         console.log(loginData);
         const response = await Login(loginData);
-        if ("message" in response) {
-          setError(response.message);
-        } else {
-          // dispatch(setUser(response));
+        if ("user" in response) {
+          dispatch(setUser(response.user));
           toast.success("Login Successful");
           navigate("/");
+        } else {
+          toast.error(response.message);
         }
       } else {
         console.log(signUpData);
         const response = await SignUp(signUpData);
-        if ("message" in response) {
-          setError(response.message);
-        }else{
-          // dispatch(setUser(response));
+        if ("user" in response) {
+          dispatch(setUser(response.user));
           toast.success("SignUp Successful");
           navigate("/");
+        } else {
+          toast.error(response.message);
         }
-
       }
     } catch (err) {
       setError("An unexpected error occurred");

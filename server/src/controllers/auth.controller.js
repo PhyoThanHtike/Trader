@@ -100,20 +100,22 @@ export const logOut = (req, res) => {
   }
 };
 
-export const checkUser = async (req, res) => {
+export const getUser = async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await prisma.user.findUnique({ userId });
+    const id = req.user.id;
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { orders: true, tradesAsBuyer: true, tradesAsSeller: true },
+    });
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found!" });
     }
     res.status(200).json({
-      userId: user.id,
-      userName: user.name,
-      email: user.email,
-      role: user.role,
+      success: true,
+      message: "user Found",
+      user: user
     });
   } catch (error) {
     console.log("User checking error", error.message);

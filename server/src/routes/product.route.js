@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.post("/addProduct", addProduct);
 router.get("/getAllProducts", protectRoute, getAllProducts);
-router.get("/getProductById/:productId", protectRoute, getProductById);
+router.get("/getProductById/:id", protectRoute, getProductById);
 
 export default router;

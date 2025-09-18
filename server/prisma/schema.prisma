@@ -33,6 +33,7 @@ model Product {
   id        String   @id @default(cuid())
   name      String   @unique
   image     String   @default("https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541")
+  description String?
   createdAt DateTime @default(now())
   avgPrice Float
   orders    Order[]

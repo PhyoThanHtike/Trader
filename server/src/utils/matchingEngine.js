@@ -112,7 +112,8 @@ export const matchingEngine = async (newOrder) => {
 
       const availableVolume = matchOrder.volume - matchOrder.filled;
       const tradeVolume = Math.min(remainingVolume, availableVolume);
-      const tradePrice = matchOrder.price; // Use the matched order's price
+      const tradePrice = newOrder.type === "BUY" ? newOrder.price : matchOrder.price;
+      // Use the matched order's price
 
       if (tradeVolume > 0) {
         // Create trade record

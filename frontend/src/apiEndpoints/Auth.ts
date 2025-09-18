@@ -1,4 +1,6 @@
 import axiosInstance from "@/Axios/axios";
+import { setLogOutUser } from "@/store/slices/UserSlice";
+import store from "@/store/Store";
 
 interface loginData {
   email: String;
@@ -16,7 +18,7 @@ export interface loginResponse {
   message: string;
   user: any;
 }
-interface errorResponse {
+export interface errorResponse {
   success: boolean;
   message: string;
 }
@@ -56,6 +58,8 @@ export const SignOut = async () => {
     const response = await axiosInstance.post("api/auth/logout", {
       withCredentials: true,
     });
+    store.dispatch(setLogOutUser());
+    window.location.href = "/auth";
     return response.data;
   } catch (error: any) {
     throw new Error(error?.response?.data?.message || "Failed to sign out");
