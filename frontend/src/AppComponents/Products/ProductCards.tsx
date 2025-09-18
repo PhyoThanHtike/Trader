@@ -20,7 +20,7 @@ interface ProductCardProps {
   index: number;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
+const ProductCards: React.FC<ProductCardProps> = ({ product, index }) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -112,4 +112,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
   );
 };
 
-export default ProductCard;
+export default ProductCards;

@@ -7,6 +7,7 @@ import authRoutes from './routes/auth.route.js';
 import productRoutes from './routes/product.route.js';
 import orderRoutes from './routes/order.route.js'
 import cookieParser from "cookie-parser";
+import tradeRoutes from "./routes/trade.route.js";
 
 dotenv.config();
 const PORT = process.env.PORT;
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/trade", tradeRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

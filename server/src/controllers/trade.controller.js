@@ -5,221 +5,73 @@ export const getTradeMatches = async (req, res) => {
   try {
     const userId = req.user.id;
     const { type } = req.query; // 'BUY' or 'SELL'
+    console.log(userId);
 
     let matches = [];
 
-    if (type === 'SELL') {
+    if (type === "SELL") {
       // Get buy orders that match seller's criteria
       matches = await prisma.order.findMany({
         where: {
-          type: 'BUY',
-          status: { in: ['PENDING', 'PARTIALLY_FILLED'] },
+          type: "BUY",
+          status: { in: ["PENDING", "PARTIALLY_FILLED"] },
           product: {
             orders: {
               some: {
                 userId: userId,
-                type: 'SELL',
-                status: { in: ['PENDING', 'PARTIALLY_FILLED'] }
-              }
-            }
-          }
+                type: "SELL",
+                status: { in: ["PENDING", "PARTIALLY_FILLED"] },
+              },
+            },
+          },
         },
         include: {
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
-          product: true
+          product: true,
         },
-        orderBy: [
-          { price: 'desc' },
-          { createdAt: 'asc' }
-        ]
+        orderBy: [{ price: "desc" }, { createdAt: "asc" }],
       });
-    } else if (type === 'BUY') {
+    } else if (type === "BUY") {
       // Get sell orders that match buyer's criteria
       matches = await prisma.order.findMany({
         where: {
-          type: 'SELL',
-          status: { in: ['PENDING', 'PARTIALLY_FILLED'] },
+          type: "SELL",
+          status: { in: ["PENDING", "PARTIALLY_FILLED"] },
           product: {
             orders: {
               some: {
                 userId: userId,
-                type: 'BUY',
-                status: { in: ['PENDING', 'PARTIALLY_FILLED'] }
-              }
-            }
-          }
+                type: "BUY",
+                status: { in: ["PENDING", "PARTIALLY_FILLED"] },
+              },
+            },
+          },
         },
         include: {
           user: {
             select: {
               id: true,
               name: true,
-              email: true
-            }
+              email: true,
+            },
           },
-          product: true
+          product: true,
         },
-        orderBy: [
-          { price: 'asc' },
-          { createdAt: 'asc' }
-        ]
+        orderBy: [{ price: "asc" }, { createdAt: "asc" }],
       });
     }
 
     res.json({
       success: true,
       message: "Trade matches retrieved successfully",
-      matches
+      matches,
     });
-
-  } catch (error) {
-    console.log("Error in trade controller", error.message);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
-
-export const acceptTrade = async (req, res) => {
-  try {
-    const { orderId } = req.body;
-    const userId = req.user.id;
-
-    // Get the counterparty order
-    const counterpartyOrder = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        user: true,
-        product: true
-      }
-    });
-
-    if (!counterpartyOrder) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Order not found" 
-      });
-    }
-
-    // Get user's order for the same product
-    const userOrder = await prisma.order.findFirst({
-      where: {
-        userId,
-        productId: counterpartyOrder.productId,
-        type: counterpartyOrder.type === 'BUY' ? 'SELL' : 'BUY',
-        status: { in: ['PENDING', 'PARTIALLY_FILLED'] }
-      }
-    });
-
-    if (!userOrder) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "No matching order found" 
-      });
-    }
-
-    // Calculate trade volume (minimum of available volumes)
-    const tradeVolume = Math.min(
-      counterpartyOrder.volume - counterpartyOrder.filled,
-      userOrder.volume - userOrder.filled
-    );
-
-    // Create trade
-    const trade = await prisma.trade.create({
-      data: {
-        price: counterpartyOrder.price,
-        volume: tradeVolume,
-        buyerId: counterpartyOrder.type === 'BUY' ? counterpartyOrder.userId : userId,
-        sellerId: counterpartyOrder.type === 'SELL' ? counterpartyOrder.userId : userId,
-        productId: counterpartyOrder.productId
-      }
-    });
-
-    // Update orders
-    await prisma.order.update({
-      where: { id: counterpartyOrder.id },
-      data: {
-        filled: counterpartyOrder.filled + tradeVolume,
-        status: (counterpartyOrder.filled + tradeVolume) === counterpartyOrder.volume ? 'FILLED' : 'PARTIALLY_FILLED'
-      }
-    });
-
-    await prisma.order.update({
-      where: { id: userOrder.id },
-      data: {
-        filled: userOrder.filled + tradeVolume,
-        status: (userOrder.filled + tradeVolume) === userOrder.volume ? 'FILLED' : 'PARTIALLY_FILLED'
-      }
-    });
-
-    // Send email notifications
-    if (counterpartyOrder.type === 'BUY') {
-      // Seller accepted buyer's offer - notify buyer
-      await sendEmailNotification({
-        to: counterpartyOrder.user.email,
-        subject: "Your buy order has been accepted",
-        html: `
-          <p>Hello ${counterpartyOrder.user.name},</p>
-          <p>Your buy order for ${counterpartyOrder.product.name} has been accepted by a seller.</p>
-          <p>Trade Details:</p>
-          <ul>
-            <li>Product: ${counterpartyOrder.product.name}</li>
-            <li>Price: $${counterpartyOrder.price}</li>
-            <li>Volume: ${tradeVolume}</li>
-            <li>Total: $${counterpartyOrder.price * tradeVolume}</li>
-          </ul>
-          <p>Please contact the seller to complete the transaction.</p>
-        `
-      });
-    } else {
-      // Buyer accepted seller's offer - notify seller
-      await sendEmailNotification({
-        to: counterpartyOrder.user.email,
-        subject: "Your sell order has been accepted",
-        html: `
-          <p>Hello ${counterpartyOrder.user.name},</p>
-          <p>Your sell order for ${counterpartyOrder.product.name} has been accepted by a buyer.</p>
-          <p>Trade Details:</p>
-          <ul>
-            <li>Product: ${counterpartyOrder.product.name}</li>
-            <li>Price: $${counterpartyOrder.price}</li>
-            <li>Volume: ${tradeVolume}</li>
-            <li>Total: $${counterpartyOrder.price * tradeVolume}</li>
-          </ul>
-          <p>Please contact the buyer to complete the transaction.</p>
-        `
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "Trade accepted successfully",
-      trade
-    });
-
-  } catch (error) {
-    console.log("Error in trade controller", error.message);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
-  }
-};
-
-export const rejectTrade = async (req, res) => {
-  try {
-    const { orderId } = req.body;
-    const userId = req.user.id;
-
-    // Here you might want to store rejection information
-    // to prevent showing the same match again
-
-    res.json({
-      success: true,
-      message: "Trade rejected successfully"
-    });
-
   } catch (error) {
     console.log("Error in trade controller", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -229,42 +81,100 @@ export const rejectTrade = async (req, res) => {
 export const getUserTrades = async (req, res) => {
   try {
     const userId = req.user.id;
+    const { type } = req.query;
+
+    // Build where clause
+    const whereClause = {
+      OR: [
+        { buyerId: userId },
+        { sellerId: userId }
+      ]
+    };
+
+    // Add type filter if provided
+    if (type === 'buy') {
+      whereClause.OR = [{ buyerId: userId }];
+    } else if (type === 'sell') {
+      whereClause.OR = [{ sellerId: userId }];
+    }
 
     const trades = await prisma.trade.findMany({
-      where: {
-        OR: [
-          { buyerId: userId },
-          { sellerId: userId }
-        ]
-      },
+      where: whereClause,
       include: {
-        product: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            image: true
+          }
+        },
         buyer: {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            profilePicture: true
           }
         },
         seller: {
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            profilePicture: true
           }
         }
       },
       orderBy: { createdAt: 'desc' }
     });
 
+    // Calculate totals
+    const tradeStats = {
+      totalTrades: trades.length,
+      totalVolume: trades.reduce((sum, trade) => sum + trade.volume, 0),
+      totalValue: trades.reduce((sum, trade) => sum + (trade.price * trade.volume), 0),
+      buyCount: trades.filter(trade => trade.buyerId === userId).length,
+      sellCount: trades.filter(trade => trade.sellerId === userId).length
+    };
+
+    // Format response with user role in each trade
+    const formattedTrades = trades.map(trade => ({
+      id: trade.id,
+      price: trade.price,
+      volume: trade.volume,
+      totalValue: trade.price * trade.volume,
+      createdAt: trade.createdAt,
+      product: trade.product,
+      // User's role in this trade
+      userRole: trade.buyerId === userId ? 'buyer' : 'seller',
+      // Counterparty information
+      counterparty: trade.buyerId === userId ? {
+        id: trade.seller.id,
+        name: trade.seller.name,
+        email: trade.seller.email,
+        profilePicture: trade.seller.profilePicture
+      } : {
+        id: trade.buyer.id,
+        name: trade.buyer.name,
+        email: trade.buyer.email,
+        profilePicture: trade.buyer.profilePicture
+      }
+    }));
+
     res.json({
       success: true,
       message: "Trades retrieved successfully",
-      trades
+      data: {
+        trades: formattedTrades,
+        stats: tradeStats
+      }
     });
 
   } catch (error) {
     console.log("Error in trade controller", error.message);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(500).json({ 
+      success: false, 
+      message: "Internal Server Error" 
+    });
   }
 };

@@ -2,10 +2,10 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { GetAllProducts, type allProducts } from "@/apiEndpoints/Products";
-import ProductCard from "@/AppComponents/Products/ProductCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import ProductCards from "@/AppComponents/Products/ProductCards";
 
 const Products = () => {
   const {
@@ -62,7 +62,7 @@ const Products = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
       {allProductsData.products.map((product:any, index:any) => (
-        <ProductCard
+        <ProductCards
           key={product.id}
           product={product}
           index={index}

@@ -5,7 +5,13 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { GetProductById, type productById } from "@/apiEndpoints/Products";
 import { PlaceOrder, type orderData } from "@/apiEndpoints/Order";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +29,7 @@ import {
   DollarSign,
   Package,
   BanknoteArrowDown,
-  BanknoteArrowUp
+  BanknoteArrowUp,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -56,7 +62,8 @@ const OrderForm: React.FC = () => {
       navigate("/order");
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : "Failed to place order";
+      const message =
+        err instanceof Error ? err.message : "Failed to place order";
       setFormError(message);
     },
   });
@@ -70,8 +77,10 @@ const OrderForm: React.FC = () => {
     const priceNum = parseFloat(price);
     const volumeNum = parseFloat(volume);
 
-    if (isNaN(priceNum) || priceNum <= 0) return setFormError("Please enter a valid price > 0");
-    if (isNaN(volumeNum) || volumeNum <= 0) return setFormError("Please enter a valid volume > 0");
+    if (isNaN(priceNum) || priceNum <= 0)
+      return setFormError("Please enter a valid price > 0");
+    if (isNaN(volumeNum) || volumeNum <= 0)
+      return setFormError("Please enter a valid volume > 0");
 
     const payload: orderData = {
       type: orderType,
@@ -167,7 +176,9 @@ const OrderForm: React.FC = () => {
       <div className="container mx-auto p-6 max-w-5xl">
         <Alert className="mb-6">
           <AlertTitle>Product not found</AlertTitle>
-          <AlertDescription>The product you're trying to order doesn't exist.</AlertDescription>
+          <AlertDescription>
+            The product you're trying to order doesn't exist.
+          </AlertDescription>
         </Alert>
         <Button onClick={() => navigate("/order")}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Products
@@ -181,19 +192,26 @@ const OrderForm: React.FC = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45 }}
-      className="container mx-auto p-6 max-w-6xl"
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="container p-6 w-full"
     >
       {/* Header */}
       <div className="mb-8 flex items-center">
-        <Button variant="outline" size="icon" className="mr-4" onClick={() => navigate("/order")}>
+        <Button
+          variant="outline"
+          size="icon"
+          className="mr-4"
+          onClick={() => navigate("/order")}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Place Order</h1>
-          <p className="text-muted-foreground">Create a new buy or sell order</p>
+          <p className="text-muted-foreground">
+            Create a new buy or sell order
+          </p>
         </div>
       </div>
 
@@ -202,9 +220,9 @@ const OrderForm: React.FC = () => {
         {/* Product Card */}
         <motion.div
           className="lg:col-span-2"
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.08 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
         >
           <Card className="overflow-hidden">
             <div className="flex flex-col md:flex-row">
@@ -215,7 +233,8 @@ const OrderForm: React.FC = () => {
                     alt={product.productName}
                     className="w-full h-64 md:h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
+                      e.currentTarget.src =
+                        "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
                     }}
                   />
                 </div>
@@ -223,8 +242,12 @@ const OrderForm: React.FC = () => {
               <div className="p-6 flex-1">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h2 className="text-2xl font-bold">{product.productName}</h2>
-                    <p className="text-muted-foreground mt-1">{product.productDescription}</p>
+                    <h2 className="text-2xl font-bold">
+                      {product.productName}
+                    </h2>
+                    <p className="text-muted-foreground mt-1">
+                      {product.productDescription}
+                    </p>
                   </div>
                   <Badge variant="secondary" className="text-lg px-3 py-1">
                     ${product.avgPrice}
@@ -237,10 +260,16 @@ const OrderForm: React.FC = () => {
                   <div className="p-4 bg-muted/40 rounded-lg">
                     <div className="flex items-center mb-2">
                       <BanknoteArrowDown className="h-5 w-5 text-green-500 mr-2" />
-                      <span className="text-sm font-medium">Estimated Sell</span>
+                      <span className="text-sm font-medium">
+                        Estimated Sell
+                      </span>
                     </div>
-                    <p className="text-2xl font-bold text-green-600">${estimates.buy}</p>
-                    <p className="text-xs text-muted-foreground mt-1">~5% below average</p>
+                    <p className="text-2xl font-bold text-green-600">
+                      ${estimates.buy}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ~5% below average
+                    </p>
                   </div>
 
                   <div className="p-4 bg-muted/40 rounded-lg">
@@ -248,14 +277,20 @@ const OrderForm: React.FC = () => {
                       <BanknoteArrowUp className="h-5 w-5 text-blue-500 mr-2" />
                       <span className="text-sm font-medium">Estimated Buy</span>
                     </div>
-                    <p className="text-2xl font-bold text-blue-600">${estimates.sell}</p>
-                    <p className="text-xs text-muted-foreground mt-1">~5% above average</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      ${estimates.sell}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ~5% above average
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Info className="h-4 w-4 mr-2" />
-                  <span>Market prices are estimates based on current averages</span>
+                  <span>
+                    Market prices are estimates based on current averages
+                  </span>
                 </div>
               </div>
             </div>
@@ -263,167 +298,195 @@ const OrderForm: React.FC = () => {
         </motion.div>
       </div>
 
-              {/* Right Column - Market Stats and Order Form */}
-        <div className="space-y-6 grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
-          {/* Market Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 8 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.12 }}
-          >
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Market Statistics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Current Price</span>
-                  <span className="font-semibold">${marketStats?.currentPrice ?? product.avgPrice}</span>
+      {/* Right Column - Market Stats and Order Form */}
+      <div className="space-y-6 grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
+        {/* Market Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+        >
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center">
+                <TrendingUp className="h-5 w-5 mr-2" />
+                Market Statistics
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Current Price</span>
+                <span className="font-semibold">
+                  ${marketStats?.currentPrice ?? product.avgPrice}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Highest Bid</span>
+                <span className="font-semibold">
+                  {marketStats?.highestBid
+                    ? `$${marketStats.highestBid}`
+                    : "N/A"}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Lowest Ask</span>
+                <span className="font-semibold">
+                  {marketStats?.lowestAsk
+                    ? `$${marketStats.lowestAsk}`
+                    : "No Sell Orders"}
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Selling Volume</span>
+                <span className="font-semibold">
+                  {marketStats?.totalSellVolume ?? 0}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Order Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+        >
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle>Order Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {formError && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Order Type</Label>
+                  <RadioGroup
+                    value={orderType}
+                    onValueChange={(v: "BUY" | "SELL") => setOrderType(v)}
+                    className="grid grid-cols-2 gap-4"
+                  >
+                    <div>
+                      <RadioGroupItem
+                        value="SELL"
+                        id="sell"
+                        className="sr-only"
+                      />
+                      <Label
+                        htmlFor="sell"
+                        className={`flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                          orderType === "SELL"
+                            ? "border-green-500 bg-green-50 dark:bg-green-950/20"
+                            : ""
+                        }`}
+                      >
+                        <BanknoteArrowDown className="mb-2 h-6 w-6 text-green-500" />
+                        <span className="font-semibold text-green-600">
+                          SELL
+                        </span>
+                      </Label>
+                    </div>
+                    <div>
+                      <RadioGroupItem
+                        value="BUY"
+                        id="buy"
+                        className="sr-only"
+                      />
+                      <Label
+                        htmlFor="buy"
+                        className={`flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
+                          orderType === "BUY"
+                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                            : ""
+                        }`}
+                      >
+                        <BanknoteArrowUp className="mb-2 h-6 w-6 text-blue-500" />
+                        <span className="font-semibold text-blue-600">BUY</span>
+                      </Label>
+                    </div>
+                  </RadioGroup>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Highest Bid</span>
-                  <span className="font-semibold">{marketStats?.highestBid ? `$${marketStats.highestBid}` : "N/A"}</span>
+                <div className="space-y-2">
+                  <Label htmlFor="price" className="flex items-center">
+                    <DollarSign className="h-4 w-4 mr-2" />
+                    Price per unit ($)
+                  </Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                    placeholder="0.00"
+                  />
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Lowest Ask</span>
-                  <span className="font-semibold">{marketStats?.lowestAsk ? `$${marketStats.lowestAsk}` : "No Sell Orders"}</span>
+                <div className="space-y-2">
+                  <Label htmlFor="volume" className="flex items-center">
+                    <Package className="h-4 w-4 mr-2" />
+                    Volume (units)
+                  </Label>
+                  <Input
+                    id="volume"
+                    type="number"
+                    step="1"
+                    min="1"
+                    value={volume}
+                    onChange={(e) => setVolume(e.target.value)}
+                    required
+                    placeholder="0"
+                  />
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Selling Volume</span>
-                  <span className="font-semibold">{marketStats?.totalSellVolume ?? 0}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Order Form */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            transition={{ delay: 0.18 }}
-          >
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle>Order Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {formError && (
-                  <Alert variant="destructive" className="mb-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Error</AlertTitle>
-                    <AlertDescription>{formError}</AlertDescription>
-                  </Alert>
+                {price && volume && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="p-4 bg-muted/40 rounded-lg flex justify-between items-center"
+                  >
+                    <span className="font-medium">Total Value</span>
+                    <span className="text-xl font-bold text-primary">
+                      ${calculateTotal()}
+                    </span>
+                  </motion.div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Order Type</Label>
-                    <RadioGroup 
-                      value={orderType} 
-                      onValueChange={(v: "BUY" | "SELL") => setOrderType(v)} 
-                      className="grid grid-cols-2 gap-4"
-                    >
-                      <div>
-                        <RadioGroupItem value="SELL" id="sell" className="sr-only" />
-                        <Label
-                          htmlFor="sell"
-                          className={`flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
-                            orderType === "SELL" ? "border-green-500 bg-green-50 dark:bg-green-950/20" : ""
-                          }`}
-                        >
-                          <BanknoteArrowDown className="mb-2 h-6 w-6 text-green-500" />
-                          <span className="font-semibold text-green-600">SELL</span>
-                        </Label>
-                      </div>
-                      <div>
-                        <RadioGroupItem value="BUY" id="buy" className="sr-only" />
-                        <Label
-                          htmlFor="buy"
-                          className={`flex flex-col items-center justify-center rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground cursor-pointer ${
-                            orderType === "BUY" ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20" : ""
-                          }`}
-                        >
-                          <BanknoteArrowUp className="mb-2 h-6 w-6 text-blue-500" />
-                          <span className="font-semibold text-blue-600">BUY</span>
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="price" className="flex items-center">
-                      <DollarSign className="h-4 w-4 mr-2" />
-                      Price per unit ($)
-                    </Label>
-                    <Input 
-                      id="price" 
-                      type="number" 
-                      step="0.01" 
-                      min="0.01" 
-                      value={price} 
-                      onChange={(e) => setPrice(e.target.value)} 
-                      required 
-                      placeholder="0.00"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="volume" className="flex items-center">
-                      <Package className="h-4 w-4 mr-2" />
-                      Volume (units)
-                    </Label>
-                    <Input 
-                      id="volume" 
-                      type="number" 
-                      step="1" 
-                      min="1" 
-                      value={volume} 
-                      onChange={(e) => setVolume(e.target.value)} 
-                      required 
-                      placeholder="0"
-                    />
-                  </div>
-
-                  {price && volume && (
-                    <motion.div 
-                      initial={{ opacity: 0 }} 
-                      animate={{ opacity: 1 }}
-                      className="p-4 bg-muted/40 rounded-lg flex justify-between items-center"
-                    >
-                      <span className="font-medium">Total Value</span>
-                      <span className="text-xl font-bold text-primary">${calculateTotal()}</span>
-                    </motion.div>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full mt-2"
+                  disabled={placeOrderMutation.isPending}
+                >
+                  {placeOrderMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Placing Order...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Place {orderType} Order
+                    </>
                   )}
-
-                  <Button 
-                    type="submit" 
-                    size="lg" 
-                    className="w-full mt-2" 
-                    disabled={placeOrderMutation.isPending}
-                  >
-                    {placeOrderMutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
-                        Placing Order...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="mr-2 h-4 w-4" /> 
-                        Place {orderType} Order
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
