@@ -1,7 +1,6 @@
-// components/ProductCard.tsx
 import React from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
@@ -27,85 +26,83 @@ const ProductCards: React.FC<ProductCardProps> = ({ product, index }) => {
     navigate(`/products/${product.id}`);
   };
 
-  const truncateDescription = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString();
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.4,
+        duration: 0.5,
         delay: index * 0.1,
         ease: "easeOut",
       }}
-      whileHover={{
-        y: -8,
-        transition: { duration: 0.2, ease: "easeOut" },
-      }}
+      whileHover={{ y: -6 }}
       className="h-full"
     >
-      <Card 
-        className="h-full cursor-pointer overflow-hidden border-2 border-transparent hover:border-primary/20 transition-all duration-300 shadow-lg hover:shadow-xl"
+      <Card
+        className="h-full cursor-pointer overflow-hidden border border-transparent hover:border-primary/30 transition-all duration-300 shadow-md hover:shadow-2xl rounded-xl"
         onClick={handleCardClick}
       >
         <motion.div
           whileHover={{ scale: 1.05 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.4 }}
           className="overflow-hidden"
         >
-          <img
+          <motion.img
             src={product.image}
             alt={product.name}
-            className="w-full h-48 object-cover"
+            className="w-full h-48 object-cover rounded-t-lg"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.5 }}
             onError={(e) => {
-              e.currentTarget.src = "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png?20150327203541";
+              e.currentTarget.src =
+                "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png";
             }}
           />
         </motion.div>
-        
+
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
-            <motion.h3 
-              className="text-xl font-bold"
-            //   whileHover={{ color: "#3b82f6" }}
-            //   transition={{ duration: 0.2 }}
+            <motion.h3
+              className="text-lg font-semibold"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 + 0.2 }}
             >
               {product.name}
             </motion.h3>
-            <Badge variant="secondary" className="bg-primary text-primary-foreground">
-              ${product.avgPrice}
-            </Badge>
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 + 0.3 }}
+            >
+              <Badge variant="secondary" className="bg-gray-800 text-white px-2 py-1">
+                ${product.avgPrice}
+              </Badge>
+            </motion.div>
           </div>
         </CardHeader>
-        
-        {/* <CardContent className="pb-4">
-          <p className="text-muted-foreground text-sm line-clamp-3">
-            {truncateDescription(product.description, 120)}
-          </p>
-        </CardContent> */}
-        
+
         <CardFooter className="flex justify-between items-center pt-2 border-t">
           <span className="text-xs text-muted-foreground">
             Added: {formatDate(product.createdAt)}
           </span>
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleCardClick();
-            }}
-            className="text-primary hover:text-primary/80"
-          >
-            View Details →
-          </Button>
+          <motion.div whileHover={{ x: 4 }}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCardClick();
+              }}
+              className="text-primary hover:text-primary/80"
+            >
+              View Details →
+            </Button>
+          </motion.div>
         </CardFooter>
       </Card>
     </motion.div>

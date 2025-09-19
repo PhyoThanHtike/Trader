@@ -16,6 +16,7 @@ import {
   Activity,
 } from "lucide-react";
 import ChartComponent from "@/AppComponents/ProductDetail/ChartComponent";
+import { motion } from "framer-motion";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -114,13 +115,25 @@ const ProductDetail = () => {
   const priceEstimates = calculatePriceEstimates(product.avgPrice);
 
   return (
-    <div className="container mx-auto p-6">
+    <motion.div
+      className="container mx-auto p-6"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       {/* Header */}
       <div className="mb-6 flex items-center gap-4">
         <Button variant="outline" size="sm" onClick={() => navigate(-1)}>
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        <h1 className="text-3xl font-bold">Product Details</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-3xl font-bold"
+        >
+          Product Details
+        </motion.h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -212,7 +225,9 @@ const ProductDetail = () => {
               </div>
             </CardContent>
           </Card>
-          <button className="w-full p-2 bg-green-700 text-white rounded-lg mt-6">Create Order</button>
+          <button className="w-full p-2 bg-green-700 text-white rounded-lg mt-6">
+            Create Order
+          </button>
         </div>
 
         <Card>
@@ -279,7 +294,7 @@ const ProductDetail = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
