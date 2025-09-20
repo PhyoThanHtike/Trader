@@ -3,8 +3,7 @@ import { motion } from "framer-motion";
 import { GetUser, type GetUserResponse } from "@/apiEndpoints/Auth";
 import OrdersTable from "@/AppComponents/Dashboard/OrdersTable";
 import TradesTable from "@/AppComponents/Dashboard/TradesTable";
-import FinancialChart from "@/AppComponents/Dashboard/FinancialChart";
-import OrderStatusChart from "@/AppComponents/Dashboard/OrderStatusChart";
+import { FinancialChart, OrderStatusChart } from "@/AppComponents/Dashboard/Financial.OrderStatusCharts";
 import {
   Card,
   CardContent,
@@ -12,6 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { deleteOrder } from "@/apiEndpoints/Order";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const [userData, setUserData] = useState<GetUserResponse | null>(null);
@@ -34,6 +35,18 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  const onDelete = async(orderId:string)=>{
+    try {
+      console.log("deleting order:", orderId);
+      const response = await deleteOrder(orderId);
+      if(response.success){
+        toast.success(response.message);
+      }
+    } catch (error) {
+      console.error("Failed to delete order:", error);
+    }
+  }
 
   if (loading) {
     return (
@@ -99,7 +112,7 @@ export default function Dashboard() {
               >
                 <Card>
                   <CardContent className="p-4">
-                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <div className="text-2xl font-bold pb-2">{stat.value}</div>
                     <div className="text-sm text-muted-foreground">
                       {stat.label}
                     </div>
@@ -115,8 +128,8 @@ export default function Dashboard() {
           </div>
 
           <div>
-            <h1 className="text-2xl py-8 font-semibold">Recent Orders</h1>
-            <OrdersTable orders={orders} onRefresh={fetchUserData} />
+            <h1 className="text-2xl py-8 font-semibold">My Recent Orders</h1>
+            <OrdersTable orders={orders} onRefresh={fetchUserData} onDelete={onDelete} />
           </div>
         </CardContent>
       </motion.div>

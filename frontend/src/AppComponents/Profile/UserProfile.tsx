@@ -98,7 +98,7 @@ export default function UserProfile() {
           <CardHeader className="flex justify-between items-center">
             <div>
               {/* Bigger title to match dashboard titles */}
-              <CardTitle className="text-4xl font-bold">
+              <CardTitle className="text-3xl font-bold">
                 Profile Information
               </CardTitle>
               <CardDescription>Manage your account details</CardDescription>
@@ -198,7 +198,7 @@ export default function UserProfile() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <Label htmlFor={field.id}>{field.label}</Label>
+                  <Label htmlFor={field.id} className="py-4">{field.label}</Label>
                   <Input
                     id={field.id}
                     type={field.type}

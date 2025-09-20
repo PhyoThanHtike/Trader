@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import ChartComponent from "@/AppComponents/ProductDetail/ChartComponent";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -182,7 +183,7 @@ const ProductDetail = () => {
                 <CardTitle className="text-sm">Estimated Buy Price</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-2xl font-bold text-red-600">
+                <p className="text-2xl font-bold text-blue-600">
                   ${priceEstimates.sellPrice}
                 </p>
               </CardContent>
@@ -225,9 +226,11 @@ const ProductDetail = () => {
               </div>
             </CardContent>
           </Card>
-          <button className="w-full p-2 bg-green-700 text-white rounded-lg mt-6">
-            Create Order
-          </button>
+          <Link to={`/order/form/${id}`}>
+              <button className="w-full p-2 bg-green-700 text-white rounded-lg mt-6 hover:bg-green-800">
+                Create Order
+              </button>
+          </Link>
         </div>
 
         <Card>

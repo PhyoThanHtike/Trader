@@ -14,6 +14,7 @@ import Profile from "./Pages/Profile";
 import ProtectRoute from "./Layout/ProtectRoute";
 import ProductDetail from "./Pages/ProductDetail";
 import OrderForm from "./Pages/OrderForm";
+import AuthSuccess from "./Auth/AuthSuccess";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
         path: "auth",
         element: <Auth />,
       },
+      {
+        path: "auth/success",
+        element: <AuthSuccess/>,
+      }
     ],
   },
 ]);

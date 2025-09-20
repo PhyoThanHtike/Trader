@@ -41,7 +41,7 @@ const History = () => {
     return <div>Failed to load dashboard data</div>;
   }
 
-  const { orders, tradesAsBuyer, tradesAsSeller } = userData.user;
+  const { tradesAsBuyer, tradesAsSeller } = userData.user;
   return (
     <>
       <div className="container mx-auto p-6">

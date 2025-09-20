@@ -46,14 +46,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h2 className="text-2xl font-bold">{product.productName}</h2>
-                <p className="text-muted-foreground mt-1">
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                    <span>Market Value:</span>
+                  <Badge className="text-lg px-3 py-1">
+                     ${product.avgPrice}
+                  </Badge>
+              </div>
+            </div>
+                            <p className="text-muted-foreground mt-1">
                   {product.productDescription}
                 </p>
-              </div>
-              <Badge variant="secondary" className="text-lg px-3 py-1">
-                ${product.avgPrice}
-              </Badge>
-            </div>
 
             <Separator className="my-4" />
 

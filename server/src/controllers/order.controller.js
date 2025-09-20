@@ -9,16 +9,16 @@ import { sendEmailNotification } from "../utils/emailService.js";
 
 //     // Validate input
 //     if (!type || !price || !volume || !productId) {
-//       return res.status(400).json({ 
-//         success: false, 
-//         message: "Missing required fields" 
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields"
 //       });
 //     }
 
 //     if (price <= 0 || volume <= 0) {
-//       return res.status(400).json({ 
-//         success: false, 
-//         message: "Price and volume must be positive" 
+//       return res.status(400).json({
+//         success: false,
+//         message: "Price and volume must be positive"
 //       });
 //     }
 
@@ -28,9 +28,9 @@ import { sendEmailNotification } from "../utils/emailService.js";
 //     });
 
 //     if (!product) {
-//       return res.status(404).json({ 
-//         success: false, 
-//         message: "Product not found" 
+//       return res.status(404).json({
+//         success: false,
+//         message: "Product not found"
 //       });
 //     }
 
@@ -80,28 +80,28 @@ export const placeOrder = async (req, res) => {
 
     // Validate input
     if (!type || !price || !volume || !productId) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Missing required fields" 
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
       });
     }
 
     if (price <= 0 || volume <= 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Price and volume must be positive" 
+      return res.status(400).json({
+        success: false,
+        message: "Price and volume must be positive",
       });
     }
 
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { id: productId }
+      where: { id: productId },
     });
 
     if (!product) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Product not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
       });
     }
 
@@ -127,12 +127,12 @@ export const placeOrder = async (req, res) => {
         productId,
         // totalAmount, // For future payment
         // paymentIntentId, // For future payment
-        status: 'PENDING'
+        status: "PENDING",
       },
       include: {
         user: true,
-        product: true
-      }
+        product: true,
+      },
     });
 
     // Run automatic matching engine
@@ -148,12 +148,11 @@ export const placeOrder = async (req, res) => {
         volume: order.volume,
         status: order.status,
         filled: order.filled,
-        product: order.product.name
+        product: order.product.name,
       },
       trades: tradeResults.trades,
-      message: tradeResults.message
+      message: tradeResults.message,
     });
-
   } catch (error) {
     console.log("Error in order controller", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -166,7 +165,7 @@ export const getUserOrders = async (req, res) => {
     const { status, type, productId } = req.query;
 
     const whereClause = { userId };
-    
+
     if (status) whereClause.status = status;
     if (type) whereClause.type = type;
     if (productId) whereClause.productId = productId;
@@ -177,19 +176,18 @@ export const getUserOrders = async (req, res) => {
         product: {
           select: {
             name: true,
-            image: true
-          }
-        }
+            image: true,
+          },
+        },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
 
     res.json({
       success: true,
       message: "Orders retrieved successfully",
-      orders
+      orders,
     });
-
   } catch (error) {
     console.log("Error in order controller", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -203,43 +201,103 @@ export const cancelOrder = async (req, res) => {
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { user: true }
+      include: { user: true },
     });
 
     if (!order) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Order not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
       });
     }
 
     if (order.userId !== userId) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Not authorized to cancel this order" 
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to cancel this order",
       });
     }
 
-    if (order.status === 'FILLED') {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Cannot cancel filled order" 
+    if (order.status === "FILLED") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot cancel filled order",
       });
     }
 
     const updatedOrder = await prisma.order.update({
       where: { id: orderId },
-      data: { status: 'CANCELLED' }
+      data: { status: "CANCELLED" },
     });
 
     res.json({
       success: true,
       message: "Order cancelled successfully",
-      order: updatedOrder
+      order: updatedOrder,
     });
-
   } catch (error) {
     console.log("Error in order controller", error.message);
     res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const deleteOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const userId = req.user.id;
+
+    // Find the order and verify ownership
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { user: true },
+    });
+
+    if (!order) {
+      return res.status(404).json({ success: false, error: "Order not found" });
+    }
+
+    // Check if the user owns this order or is an admin
+    if (order.userId !== userId && req.user.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ success: false, error: "Unauthorized to delete this order" });
+    }
+
+    // Check if the order has already been partially filled (but allow FILLED orders)
+    if (order.status === "PARTIALLY_FILLED") {
+      return res.status(400).json({
+        error: "Cannot delete order that has been partially filled",
+        success: false,
+        filled: order.filled,
+        totalVolume: order.volume,
+      });
+    }
+
+    // Allow deletion of PENDING and FILLED orders only
+    if (order.status !== "PENDING" && order.status !== "FILLED") {
+      return res.status(400).json({
+        success: false,
+        error: `Cannot delete order with status: ${order.status}`,
+        currentStatus: order.status,
+        allowedStatuses: ["PENDING", "FILLED"],
+      });
+    }
+
+    // Delete the order
+    const deletedOrder = await prisma.order.delete({
+      where: { id: orderId },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Order deleted successfully",
+      order: deletedOrder,
+    });
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
   }
 };

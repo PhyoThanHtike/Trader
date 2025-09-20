@@ -44,6 +44,7 @@ export interface GetUserResponse {
       createdAt: string;
       userId: string;
       productId: string;
+      product: any;
     }>;
     tradesAsBuyer: Array<{
       id: number;
@@ -53,6 +54,9 @@ export interface GetUserResponse {
       buyerId: string;
       sellerId: string;
       productId: string;
+      product: any;
+      seller: any;
+      buyer: any;
     }>;
     tradesAsSeller: Array<{
       id: number;
@@ -62,6 +66,9 @@ export interface GetUserResponse {
       buyerId: string;
       sellerId: string;
       productId: string;
+      product: any;
+      seller: any;
+      buyer: any;
     }>;
   };
 }

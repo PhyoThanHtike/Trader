@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Table,
   TableBody,
@@ -7,10 +7,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { OrderAlert } from '../Order/OrderAlert';
-import { Trash2, X, RotateCcw } from 'lucide-react';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { OrderAlert } from "../Order/OrderAlert";
+import { Trash2, X, RotateCcw } from "lucide-react";
 
 interface Order {
   id: string;
@@ -22,27 +22,33 @@ interface Order {
   createdAt: string;
   userId: string;
   productId: string;
+  product:any;
 }
 
 interface OrdersTableProps {
   orders: Order[];
   onRefresh: () => void;
+  onDelete: (orderId: string) => void;
 }
 
-export default function OrdersTable({ orders, onRefresh }: OrdersTableProps) {
+export default function OrdersTable({
+  orders,
+  onRefresh,
+  onDelete,
+}: OrdersTableProps) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [actionType, setActionType] = useState<'delete' | 'cancel' | ''>('');
+  const [actionType, setActionType] = useState<"delete" | "cancel" | "">("");
 
   const handleDelete = (order: Order) => {
     setSelectedOrder(order);
-    setActionType('delete');
+    setActionType("delete");
     setAlertOpen(true);
   };
 
   const handleCancel = (order: Order) => {
     setSelectedOrder(order);
-    setActionType('cancel');
+    setActionType("cancel");
     setAlertOpen(true);
   };
 
@@ -51,23 +57,27 @@ export default function OrdersTable({ orders, onRefresh }: OrdersTableProps) {
 
     try {
       // Implement API calls for delete/cancel here
-      console.log(`${actionType} order:`, selectedOrder.id);
+      onDelete(selectedOrder.id);
       onRefresh();
     } catch (error) {
       console.error(`Failed to ${actionType} order:`, error);
     } finally {
       setAlertOpen(false);
       setSelectedOrder(null);
-      setActionType('');
+      setActionType("");
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'FILLED': return 'text-green-600';
-      case 'PENDING': return 'text-yellow-600';
-      case 'CANCELLED': return 'text-red-600';
-      default: return 'text-gray-600';
+      case "FILLED":
+        return "text-green-600";
+      case "PENDING":
+        return "text-yellow-600";
+      case "CANCELLED":
+        return "text-red-600";
+      default:
+        return "text-gray-600";
     }
   };
 
@@ -81,12 +91,14 @@ export default function OrdersTable({ orders, onRefresh }: OrdersTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Date</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Product</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Volume</TableHead>
               <TableHead>Filled</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
+
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -98,21 +110,27 @@ export default function OrdersTable({ orders, onRefresh }: OrdersTableProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <TableCell className={order.type === 'BUY' ? 'text-green-600' : 'text-red-600'}>
+                <TableCell>
+                  {new Date(order.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell
+                  className={
+                    order.type === "BUY" ? "text-green-600" : "text-red-600"
+                  }
+                >
                   {order.type}
                 </TableCell>
+                  <TableCell className="font-semibold text-yellow-600">{order.product.name}</TableCell>
                 <TableCell>${order.price}</TableCell>
                 <TableCell>{order.volume}</TableCell>
                 <TableCell>{order.filled}</TableCell>
                 <TableCell className={getStatusColor(order.status)}>
                   {order.status}
                 </TableCell>
-                <TableCell>
-                  {new Date(order.createdAt).toLocaleDateString()}
-                </TableCell>
+                
                 <TableCell>
                   <div className="flex space-x-2">
-                    <Button
+                    {/* <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleCancel(order)}
@@ -122,7 +140,7 @@ export default function OrdersTable({ orders, onRefresh }: OrdersTableProps) {
                       ) : (
                         <X className="w-4 h-4" />
                       )}
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="destructive"
                       size="sm"
@@ -141,14 +159,14 @@ export default function OrdersTable({ orders, onRefresh }: OrdersTableProps) {
       <OrderAlert
         open={alertOpen}
         onOpenChange={setAlertOpen}
-        title={actionType === 'delete' ? 'Delete Order' : 'Cancel Order'}
+        title={actionType === "delete" ? "Delete Order" : "Cancel Order"}
         description={
-          actionType === 'delete'
-            ? 'Are you sure you want to delete this order? This action cannot be undone.'
-            : 'Are you sure you want to cancel this order?'
+          actionType === "delete"
+            ? "Are you sure you want to delete this order? This action cannot be undone."
+            : "Are you sure you want to cancel this order?"
         }
         onConfirm={handleConfirm}
-        confirmText={actionType === 'delete' ? 'Delete' : 'Cancel'}
+        confirmText={actionType === "delete" ? "Delete" : "Cancel"}
       />
     </>
   );

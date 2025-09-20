@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { GetProductById, type productById } from "@/apiEndpoints/Products";
-import { PlaceOrder, type orderData } from "@/apiEndpoints/Order";
+import { PlaceOrder, type orderData, type orderResponse } from "@/apiEndpoints/Order";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -15,6 +15,7 @@ import ProductCard from "@/AppComponents/Order/ProductCard";
 import MarketStats from "@/AppComponents/Order/MarketStats";
 import OrderDetailsForm from "@/AppComponents/Order/OrderDetailsForm";
 import { OrderAlert } from "@/AppComponents/Order/OrderAlert";
+import { toast } from "sonner";
 
 const OrderForm: React.FC = () => {
   const { id } = useParams();
@@ -39,15 +40,33 @@ const OrderForm: React.FC = () => {
     enabled: !!id,
   });
 
-  const placeOrderMutation = useMutation({
-    mutationFn: (payload: orderData) => PlaceOrder(payload),
-    onSuccess: () => navigate("/order"),
-    onError: (err: unknown) => {
-      const message =
-        err instanceof Error ? err.message : "Failed to place order";
-      setFormError(message);
-    },
-  });
+const placeOrderMutation = useMutation({
+  mutationFn: (payload: orderData) => PlaceOrder(payload),
+  onSuccess: (data: orderResponse) => {
+    toast.success("Order placed successfully", {
+      description: data.message,
+      action: {
+        label: "Dashboard",
+        onClick: () => navigate("/"),
+      },
+      duration: 5000, // Optional: keep toast visible for 5 seconds
+    });
+  },
+  onError: (err: unknown) => {
+    const message =
+      err instanceof Error ? err.message : "Failed to place order";
+    setFormError(message);
+    
+    // Show error toast
+    toast.error("Order placement failed", {
+      description: message,
+      action: {
+        label: "Dashboard",
+        onClick: () => navigate("/"),
+      },
+    });
+  },
+});
 
   const handleConfirm = () => {
     if (!id) return setFormError("Product id is missing");
@@ -70,8 +89,10 @@ const OrderForm: React.FC = () => {
   };
 
   if (isLoading) return <LoadingSkeleton />;
-  if (error) return <ErrorState error={error} onBack={() => navigate("/order")} />;
-  if (!productData?.product) return <EmptyState onBack={() => navigate("/order")} />;
+  if (error)
+    return <ErrorState error={error} onBack={() => navigate("/order")} />;
+  if (!productData?.product)
+    return <EmptyState onBack={() => navigate("/order")} />;
 
   const { product, marketStats } = productData;
 
@@ -83,17 +104,19 @@ const OrderForm: React.FC = () => {
       className="container mx-auto p-6"
     >
       {/* Header */}
-      <div className="mb-8 flex items-center">
-        <Button
-          variant="outline"
-          size="icon"
-          className="mr-4"
-          onClick={() => navigate("/order")}
-        >
-          <ArrowLeft className="h-5 w-5" />
+      <div className="mb-6 flex items-center gap-4">
+        <Button variant="outline" size="sm" onClick={() => navigate("/order")}>
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Place Order</h1>
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-3xl font-bold"
+          >
+            Place Order
+          </motion.h1>
           <p className="text-muted-foreground">
             Create a new buy or sell order
           </p>

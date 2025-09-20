@@ -72,4 +72,18 @@ export const PlaceOrder = async (
   }
 };
 
+export const deleteOrder = async (orderId: string) => {
+  try {
+    const response = await axiosInstance.delete(
+      `/api/order/deleteOrder/${orderId}`
+    );
+    return response.data;
+  } catch (error: any) {
+    const err: errorResponse = {
+      message: error.response?.data?.message || "Failed to delete order",
+      success: error.response?.data?.success || false,
+    };
 
+    throw new Error(err.message);
+  }
+};

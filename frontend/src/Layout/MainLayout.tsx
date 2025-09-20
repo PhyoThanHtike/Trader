@@ -6,7 +6,8 @@ const MainLayout = () => {
   return (
     <>
       {/* <Navbar /> */}
-      <div>
+      <div className="bg-gradient-to-b from-blue-50 to-purple-50 
+    dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800">
         <Outlet />
       </div>
     </>

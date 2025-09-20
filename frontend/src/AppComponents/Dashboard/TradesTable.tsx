@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { useSelector } from 'react-redux';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
 import {
   Table,
   TableBody,
@@ -8,12 +8,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { OrderAlert } from '../Order/OrderAlert';
-import { Trash2, Eye, Download } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { OrderAlert } from "../Order/OrderAlert";
+import { Trash2, Eye, Download } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Trade {
   id: number;
@@ -23,6 +29,9 @@ interface Trade {
   buyerId: string;
   sellerId: string;
   productId: string;
+  seller: any;
+  buyer: any;
+  product:any;
 }
 
 interface TradesTableProps {
@@ -39,16 +48,17 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
     setSelectedTrade(trade);
     setAlertOpen(true);
   };
+  console.log(trades);
 
   const handleConfirmDelete = async () => {
     if (!selectedTrade) return;
 
     try {
       // Implement API call for delete trade here
-      console.log('Deleting trade:', selectedTrade.id);
+      console.log("Deleting trade:", selectedTrade.id);
       onRefresh?.();
     } catch (error) {
-      console.error('Failed to delete trade:', error);
+      console.error("Failed to delete trade:", error);
     } finally {
       setAlertOpen(false);
       setSelectedTrade(null);
@@ -56,32 +66,41 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
   };
 
   const getTotalValue = (trade: Trade) => trade.price * trade.volume;
-  const getRole = (trade: Trade) => trade.buyerId === userId ? 'Buyer' : 'Seller';
-  const getRoleColor = (role: string) => role === 'Buyer' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+  const getRole = (trade: Trade) =>
+    trade.buyerId === userId ? "Buyer" : "Seller";
+  const getCounterPartEmail = (trade: Trade) =>
+    trade.buyerId === userId ? trade.seller.email : trade.buyer.email;
+  const getRoleColor = (role: string) =>
+    role === "Buyer"
+      ? "bg-blue-100 text-blue-800"
+      : "bg-green-100 text-green-800";
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   // Calculate totals for summary
   const totalTrades = trades.length;
   const totalVolume = trades.reduce((sum, trade) => sum + trade.volume, 0);
-  const totalValue = trades.reduce((sum, trade) => sum + getTotalValue(trade), 0);
+  const totalValue = trades.reduce(
+    (sum, trade) => sum + getTotalValue(trade),
+    0
+  );
 
   if (trades.length === 0) {
     return (
@@ -119,7 +138,9 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
           </Card>
           <Card>
             <CardContent className="p-4">
-              <div className="text-2xl font-bold">{formatCurrency(totalValue)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(totalValue)}
+              </div>
               <div className="text-sm text-muted-foreground">Total Value</div>
             </CardContent>
           </Card>
@@ -144,20 +165,26 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
-                    <TableHead className="font-semibold">Trade ID</TableHead>
+                    <TableHead className="font-semibold">Date & Time</TableHead>
+                    <TableHead className="font-semibold">Product</TableHead>
                     <TableHead className="font-semibold">Price</TableHead>
                     <TableHead className="font-semibold">Volume</TableHead>
                     <TableHead className="font-semibold">Total Value</TableHead>
-                    <TableHead className="font-semibold">Date & Time</TableHead>
-                    <TableHead className="font-semibold">Role</TableHead>
-                    <TableHead className="font-semibold text-right">Actions</TableHead>
+                    <TableHead className="font-semibold">My Role</TableHead>
+                    <TableHead className="font-semibold">
+                      CounterPart Email
+                    </TableHead>
+                    {/* <TableHead className="font-semibold text-right">
+                      Actions
+                    </TableHead> */}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {trades.map((trade, index) => {
                     const role = getRole(trade);
+                    const counterPart = getCounterPartEmail(trade);
                     const roleColor = getRoleColor(role);
-                    
+
                     return (
                       <motion.tr
                         key={trade.id}
@@ -166,7 +193,12 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
                         transition={{ duration: 0.3, delay: index * 0.05 }}
                         className="hover:bg-muted/30 transition-colors"
                       >
-                        <TableCell className="font-medium">#{trade.id}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDate(trade.createdAt)}
+                        </TableCell>
+                        <TableCell className="font-semibold text-yellow-600">
+                            {trade.product.name}
+                        </TableCell>
                         <TableCell className="font-semibold">
                           {formatCurrency(trade.price)}
                         </TableCell>
@@ -174,24 +206,15 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
                         <TableCell className="font-semibold text-green-600">
                           {formatCurrency(getTotalValue(trade))}
                         </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {formatDate(trade.createdAt)}
-                        </TableCell>
+
                         <TableCell>
                           <Badge variant="outline" className={roleColor}>
                             {role}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell>{counterPart}</TableCell>
+                        {/* <TableCell className="text-right">
                           <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title="View Details"
-                              className="h-8 w-8"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
                             <Button
                               variant="ghost"
                               size="icon"
@@ -202,7 +225,7 @@ export default function TradesTable({ trades, onRefresh }: TradesTableProps) {
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
-                        </TableCell>
+                        </TableCell> */}
                       </motion.tr>
                     );
                   })}

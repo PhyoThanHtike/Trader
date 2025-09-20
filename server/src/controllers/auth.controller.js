@@ -105,13 +105,58 @@ export const getUser = async (req, res) => {
     const id = req.user.id;
     const user = await prisma.user.findUnique({
       where: { id },
-      include: { orders: true, tradesAsBuyer: true, tradesAsSeller: true },
+      include: { 
+        orders: {
+          include: {
+            product: {
+              select: {
+                name: true
+              }
+            }
+          },
+          orderBy:{ createdAt: "desc" }
+        },
+        tradesAsBuyer: {
+          include: {
+            product: {
+              select: {
+                name: true
+              }
+            },
+            seller: {
+              select: {
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy:{ createdAt: "desc" }
+        },
+        tradesAsSeller: {
+          include: {
+            product: {
+              select: {
+                name: true
+              }
+            },
+            buyer: {
+              select: {
+                name: true,
+                email: true
+              }
+            }
+          },
+          orderBy:{ createdAt: "desc" }
+        },
+      },
     });
+    
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found!" });
     }
+    
     res.status(200).json({
       success: true,
       message: "user Found",

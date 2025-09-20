@@ -39,14 +39,18 @@ function CollapsibleHeader() {
         <img
           src={
             // user.image
-            "https://media.internth.com/company/2718/657a2facc97f6eeb26df0d535ae5c4ca.png"
+            "https://www.pngmart.com/files/7/Green-Energy-PNG-Photos.png"
           }
           alt="Logo"
           className="w-12"
           referrerPolicy="no-referrer"
         />
         {state === "expanded" && (
-          <span className="font-bold text-lg">BiomassX</span>
+          <>
+          <p className="font-bold text-lg">Biomass<span className="font-bold text-xl text-green-700 dark:text-emerald-700">X</span></p>
+          
+          </>
+          
         )}
         {/* <SidebarTrigger className="mr-2" /> */}
       </div>
@@ -145,14 +149,17 @@ export function HomeLayout() {
         {/* Main Content */}
         <main className="flex-1 w-full">
           <div className="pt-6 pb-2 flex items-center justify-between gap-4">
-            <SidebarTrigger className="py-4" />
+            <div className="fixed">
+              <SidebarTrigger className=" py-4" />
+            </div>
+            <div></div>
 
             <div className="flex gap-2">
               <ThemeToggle />
               <div className="relative mr-10">
                 <img
                   src={
-                    // user.image
+                    user.profilePicture ||
                     "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
                   }
                   alt="User profile"

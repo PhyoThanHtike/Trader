@@ -93,7 +93,7 @@ const Order = () => {
         transition={{ duration: 0.7, delay: 0.2 }}
         className="
     rounded-xl p-6 shadow-md mb-8 
-    bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 
+    bg-gradient-to-tl from-blue-50 via-green-50 to-red-50 
     dark:from-slate-800 dark:via-slate-900 dark:to-slate-800
   "
       >

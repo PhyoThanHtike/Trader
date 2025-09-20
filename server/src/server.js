@@ -8,6 +8,9 @@ import productRoutes from './routes/product.route.js';
 import orderRoutes from './routes/order.route.js'
 import cookieParser from "cookie-parser";
 import tradeRoutes from "./routes/trade.route.js";
+import passport from "passport";
+import "./utils/passport.js";
+import googleAuthRoutes from './routes/googleAuth.route.js';
 
 dotenv.config();
 const PORT = process.env.PORT;
@@ -27,6 +30,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/trade", tradeRoutes);
+
+//For google Oauth
+app.use(passport.initialize());
+app.use("/auth", googleAuthRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

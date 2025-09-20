@@ -19,13 +19,13 @@ const queryClient = new QueryClient();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={Store}>
-      <PersistGate  persistor={persistor} loading={<Loading/>} >
+      {/* <PersistGate  persistor={persistor} loading={<Loading/>} > */}
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
               <App />
             </ThemeProvider>
         </QueryClientProvider>
-      </PersistGate>
+      {/* </PersistGate> */}
       <Toaster position="top-center" richColors closeButton />
     </Provider>
   </StrictMode>,
