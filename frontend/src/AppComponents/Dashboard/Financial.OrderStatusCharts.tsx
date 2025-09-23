@@ -240,3 +240,5 @@ export default function DashboardCharts({ orders, tradesAsSeller }: FinancialCha
     </div>
   );
 }
+
+//something to fix
