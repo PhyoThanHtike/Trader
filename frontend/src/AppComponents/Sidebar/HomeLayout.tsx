@@ -160,7 +160,7 @@ export function HomeLayout() {
                 <img
                   src={
                     user.profilePicture ||
-                    "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg"
+                    "https://i.pinimg.com/736x/3b/9d/50/3b9d50a32ed833d9cdc73978e98c8fc2.jpg"
                   }
                   alt="User profile"
                   className="h-9 w-9 rounded-full object-cover border-2 border-blue-500/30 hover:border-purple-500/60 transition-all"

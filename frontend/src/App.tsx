@@ -15,11 +15,13 @@ import ProtectRoute from "./Layout/ProtectRoute";
 import ProductDetail from "./Pages/ProductDetail";
 import OrderForm from "./Pages/OrderForm";
 import AuthSuccess from "./Auth/AuthSuccess";
+import ErrorPage from "./Pages/ErrorPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />, // <Outlet /> renders here
+    errorElement: <ErrorPage/>,
     children: [
       {
         element: (
